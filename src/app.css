@@ -1,0 +1,31 @@
+.timelineContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+.timelineContainer::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--text);
+    z-index: 0;
+}
+
+@media (max-width: 1024px) {
+    .timelineContainer::before {
+        content: "";
+        position: absolute;
+        left: 5%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--text);
+        z-index: 0;
+    }
+}
