@@ -1,0 +1,26 @@
+import "./Timeline.css";
+import TimelineCard from "../../components/TimelineCard";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const timelineRoute = createFileRoute("/")({
+  component: Timeline,
+});
+
+function Timeline = () => {
+  return (
+    <div className="timelineContainer">
+      {[
+        Array.from({ length: 21 }).map((_, index) => (
+          <TimelineCard
+            key={index}
+            position={index % 2 === 0 ? "left" : "right"}
+            title="Christmas Trees"
+            date="2026-01-01"
+            description="Looking at our tree, toasting to the new year"
+            image="src\assets\iamge.png"
+          />
+        )),
+      ]}
+    </div>
+  );
+};
