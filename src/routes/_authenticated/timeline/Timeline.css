@@ -16,8 +16,14 @@
     background: var(--text);
     z-index: 0;
 }
-
-@media (max-width: 1024px) {
+.timelineMessage {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--text);
+    text-align: center;
+    width: 1000px;
+}
+@media (max-width: 1060px) {
     .timelineContainer::before {
         content: "";
         position: absolute;
@@ -27,5 +33,8 @@
         width: 2px;
         background: var(--text);
         z-index: 0;
+    }
+    .timelineMessage {
+        width: 100%;
     }
 }

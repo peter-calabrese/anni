@@ -2,11 +2,11 @@ import "./Timeline.css";
 import TimelineCard from "../../components/TimelineCard";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const timelineRoute = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/timeline/")({
   component: Timeline,
 });
 
-function Timeline = () => {
+function Timeline() {
   return (
     <div className="timelineContainer">
       {[
@@ -23,4 +23,4 @@ function Timeline = () => {
       ]}
     </div>
   );
-};
+}

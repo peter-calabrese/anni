@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@fontsource/geist": "^5.2.8",
-    "@tanstack/react-router": "^1.144.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "@tanstack/react-router": "^1.145.7",
+    "@tanstack/react-router-devtools": "^1.145.7",
     "geist": "^1.5.1",
     "motion": "^12.23.26",
     "react": "^19.2.0",
@@ -19,7 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@tanstack/router-plugin": "^1.145.4",
+    "@tanstack/router-plugin": "^1.145.7",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
