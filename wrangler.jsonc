@@ -3,10 +3,6 @@
   "main": "src/index.tsx",
   "build": {
     "command": "pnpm run build",
-    "watch": "pnpm run watch",
-    "upload": {
-      "directory": "build",
-    },
   },
   "routes": [
     {
