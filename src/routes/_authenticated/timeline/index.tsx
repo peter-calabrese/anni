@@ -1,7 +1,7 @@
 import "./Timeline.css";
 import TimelineCard from "../../../components/TimelineCard";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiClient } from "../../../lib/api";
 
 export const Route = createFileRoute("/_authenticated/timeline/")({
