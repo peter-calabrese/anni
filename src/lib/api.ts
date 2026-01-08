@@ -6,6 +6,8 @@ export async function apiClient(endpoint: string, options: RequestInit = {}) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  console.log(session?.access_token);
+
   return fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
     ...options,
     headers: {

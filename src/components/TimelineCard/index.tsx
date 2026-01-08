@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./timelinecard.module.css";
+import { apiClient } from "../../lib/api";
 
 interface Event {
   title: string;
@@ -19,11 +20,9 @@ export default function TimelineCard({
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    fetch(`http://192.168.0.243:8080/images/presigned-url/${image}`, {
-      // headers: { 'Authorization': `Bearer ${jwt}` }
-    })
-      .then((res) => res.json())
-      .then((data) => setImageUrl(data.url));
+    apiClient(`images/presigned-url/${image}`).then((res) =>
+      res.json().then((data) => setImageUrl(data.url)),
+    );
   }, [image]);
 
   return (
