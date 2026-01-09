@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/Login/index'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTimelineIndexRouteImport } from './routes/_authenticated/timeline/index'
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -29,11 +28,6 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
   path: '/Login/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedTimelineIndexRoute =
   AuthenticatedTimelineIndexRouteImport.update({
     id: '/timeline/',
@@ -43,13 +37,11 @@ const AuthenticatedTimelineIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/Login': typeof LoginIndexRoute
   '/timeline': typeof AuthenticatedTimelineIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/Login': typeof LoginIndexRoute
   '/timeline': typeof AuthenticatedTimelineIndexRoute
 }
@@ -57,20 +49,18 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/Login/': typeof LoginIndexRoute
   '/_authenticated/timeline/': typeof AuthenticatedTimelineIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/Login' | '/timeline'
+  fullPaths: '/' | '/Login' | '/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/Login' | '/timeline'
+  to: '/' | '/Login' | '/timeline'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/_authenticated/dashboard'
     | '/Login/'
     | '/_authenticated/timeline/'
   fileRoutesById: FileRoutesById
@@ -104,13 +94,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/timeline/': {
       id: '/_authenticated/timeline/'
       path: '/timeline'
@@ -122,12 +105,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedTimelineIndexRoute: typeof AuthenticatedTimelineIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedTimelineIndexRoute: AuthenticatedTimelineIndexRoute,
 }
 

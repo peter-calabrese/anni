@@ -1,80 +1,75 @@
-import { useEffect, useRef, useState, type DragEventHandler } from "react"
-import { motion } from "motion/react"
-import image from "../../assets/iamge.png"
-export function AudioPlayer({ audioSrc }: { audioSrc: any }) {
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import image from "../../assets/iamge.png";
+import { useAudioControls } from "../../hooks/useAudioControls";
+import { Play, Pause, Minus, Plus } from "lucide-react";
+import styles from "./AudioPlayer.module.css";
+export function AudioPlayer({ audioSrc }: { audioSrc: string }) {
+  interface DragConstraints {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  }
 
-    interface DragConstraints {
-        left: number,
-        top: number,
-        right: number,
-        bottom: number
-    }
-    const [isPlaying, setIsPlaying] = useState<Boolean>(false);
-    const audioRef = useRef(null);
+  // const BOX_WIDTH = 250
+  // const BOX_HEIGHT = 50;
 
-    const handlePlay = () => setIsPlaying(true)
-    const handlePause = () => setIsPlaying(false)
-    const BOX_WIDTH = 250;
-    const BOX_HEIGHT = 50;
+  const [minimize, setMinimize] = useState(false);
 
-    const [constraints, setConstraints] = useState<DragConstraints | null>(null);
+  const {
+    ref: audioRef,
+    minutes,
+    seconds,
 
-    useEffect(() => {
-        const updateConstraints = () => {
-            setConstraints({
-                left: 0,
-                top: 0,
-                right: window.innerWidth - BOX_WIDTH,
-                bottom: window.innerHeight - BOX_HEIGHT,
-            });
-        };
+    handleAudio,
+    handlePlay,
+    handlePause,
+    isPlaying,
+  } = useAudioControls();
 
-        updateConstraints();
-        window.addEventListener("resize", updateConstraints);
-        return () => window.removeEventListener("resize", updateConstraints);
-    }, []);
+  return (
+    <>
+      <audio
+        ref={audioRef}
+        src={audioSrc}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        loop
+      />
+      {minimize ? (
+        <div className={styles.plus} onClick={() => setMinimize(false)}>
+          <Plus />
+        </div>
+      ) : (
+        <div className={styles.audioWrapper}>
+          <div className={styles.container}>
+            <div className={styles.minus}>
+              <p>Thank God</p>
+              <Minus
+                onClick={() => setMinimize(!minimize)}
+                style={{
+                  cursor: "pointer",
+                }}
+              />
+            </div>
 
-    if (!constraints) return null;
-
-
-    return (
-
-        <motion.div
-            drag
-            dragMomentum={true}
-            dragElastic={0.12}
-            dragConstraints={constraints}
-            style={{
-                width: BOX_WIDTH,
-                height: BOX_HEIGHT,
-                background: "#6366f1",
-                borderRadius: 12,
-                zIndex: 9999,
-                position: "fixed",
-                top: 0,
-                left: 0,
-                cursor: "grab",
-            }}
-        >
             <img src={image} width={48} height={48} draggable="false" />
-            <audio
-                ref={audioRef}
-                src={audioSrc}
-                onPlay={handlePlay}
-                onPause={handlePause}
-                loop
 
-            />
-            <button style={{
-                position: "absolute",
-                right: 0
-            }}>X</button>
-            <button >
-                {isPlaying ? "Pause" : "Play"}
-            </button>
+            <div className={styles.controls}>
+              {isPlaying ? (
+                <Pause onClick={handleAudio} />
+              ) : (
+                <Play onClick={handleAudio} />
+              )}
 
-
-        </motion.div >
-
-    )
+              <p>
+                {minutes}:{seconds}/2:53
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

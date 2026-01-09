@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { apiClient } from "../../../lib/api";
 import { AudioPlayer } from "../../../components/AudioPlayer";
+import audio from "../../../assets/our_song.mp3";
 
 export const Route = createFileRoute("/_authenticated/timeline/")({
   component: Timeline,
@@ -31,7 +32,7 @@ function Timeline() {
   }, []);
   return (
     <>
-      <AudioPlayer />
+      <AudioPlayer audioSrc={audio} />
       <div
         style={{
           display: "flex",
