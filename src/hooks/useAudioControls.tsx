@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useAudioControls = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -27,6 +27,14 @@ export const useAudioControls = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      
+      console.log("play");
+      audioRef.current.play();
+    }
+  }, [audioRef]);
+
   const handleAudio = () => {
     if (isPlaying) {
       audioRef.current?.pause();
@@ -45,7 +53,6 @@ export const useAudioControls = () => {
     ref,
     minutes,
     seconds,
-
     handleAudio,
     handlePlay,
     handlePause,

@@ -35,6 +35,7 @@ export function AudioPlayer({ audioSrc }: { audioSrc: string }) {
         src={audioSrc}
         onPlay={handlePlay}
         onPause={handlePause}
+        // autoPlay
         loop
       />
       {minimize ? (
