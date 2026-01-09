@@ -1,20 +1,10 @@
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { useState } from "react";
+
 import image from "../../assets/iamge.png";
 import { useAudioControls } from "../../hooks/useAudioControls";
 import { Play, Pause, Minus, Plus } from "lucide-react";
 import styles from "./AudioPlayer.module.css";
 export function AudioPlayer({ audioSrc }: { audioSrc: string }) {
-  interface DragConstraints {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-  }
-
-  // const BOX_WIDTH = 250
-  // const BOX_HEIGHT = 50;
-
   const [minimize, setMinimize] = useState(false);
 
   const {
