@@ -3,6 +3,7 @@ import TimelineCard from "../../../components/TimelineCard";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { apiClient } from "../../../lib/api";
+import { AudioPlayer } from "../../../components/AudioPlayer";
 
 export const Route = createFileRoute("/_authenticated/timeline/")({
   component: Timeline,
@@ -30,6 +31,7 @@ function Timeline() {
   }, []);
   return (
     <>
+      <AudioPlayer />
       <div
         style={{
           display: "flex",
