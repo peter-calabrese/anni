@@ -5,6 +5,7 @@
     gap: 1rem;
     position: relative;
 }
+
 .timelineContainer::before {
     content: "";
     position: absolute;
@@ -16,6 +17,7 @@
     background: var(--text);
     z-index: 0;
 }
+
 .timelineMessage {
     font-size: 1.1rem;
     line-height: 1.5;
@@ -23,6 +25,7 @@
     text-align: center;
     width: 1000px;
 }
+
 @media (max-width: 1060px) {
     .timelineContainer::before {
         content: "";
@@ -34,7 +37,13 @@
         background: var(--text);
         z-index: 0;
     }
+
     .timelineMessage {
         width: 100%;
     }
+}
+
+
+.container {
+    margin-bottom: 104px;
 }

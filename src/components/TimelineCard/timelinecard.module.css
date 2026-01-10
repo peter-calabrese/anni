@@ -2,6 +2,7 @@
     --width: 500px;
     --height: 520px;
 }
+
 /* Central timeline line */
 
 .cardWrapper {
@@ -16,11 +17,13 @@
 }
 
 .cardWrapperLeft {
-    margin-right: calc(var(--width) + 48px); /* Push to left side */
+    margin-right: calc(var(--width) + 48px);
+    /* Push to left side */
 }
 
 .cardWrapperRight {
-    margin-left: calc(var(--width) + 48px); /* Push to right side */
+    margin-left: calc(var(--width) + 48px);
+    /* Push to right side */
 }
 
 .mainImage {
@@ -28,7 +31,8 @@
     height: var(--height);
     object-fit: cover;
     display: block;
-    image-rendering: auto; /* or -webkit-optimize-contrast */
+    image-rendering: auto;
+    /* or -webkit-optimize-contrast */
     backface-visibility: hidden;
     transform: translateZ(0);
     border-radius: 12px 12px 24px 24px;
@@ -38,6 +42,7 @@
     z-index: 2;
     position: absolute;
     bottom: 0;
+
     display: flex;
     gap: 8px;
     background-color: var(--mantle);
@@ -54,6 +59,7 @@
     flex-direction: column;
     margin: 0;
 }
+
 .cardDescription {
     margin: 0;
     margin-top: -2px;
@@ -77,11 +83,13 @@
     color: var(--subtext-0);
     opacity: 0.8;
 }
+
 @media (max-width: 1060px) {
     :root {
         --width: 350px;
         --height: 475px;
     }
+
     .cardWrapperLeft {
         margin-right: 0;
     }

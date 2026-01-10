@@ -32,7 +32,7 @@ function Timeline() {
     fetchImages();
   }, []);
   return (
-    <>
+    <div className="container">
       <button onClick={signOut}>Logout</button>
       <AudioPlayer audioSrc={audio} />
       <div
@@ -78,6 +78,6 @@ function Timeline() {
           ),
         ]}
       </div>
-    </>
+    </div>
   );
 }
