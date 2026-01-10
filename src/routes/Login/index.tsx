@@ -2,7 +2,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "../../lib/supabase";
 import { useEffect, useState } from "react";
-
+import styles from './login.module.css'
+import { useAuth } from "../../contexts/AuthContext";
 export const Route = createFileRoute("/Login/")({
   component: Login,
 });
@@ -11,27 +12,26 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const { session } = useAuth();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error(error)
+    }
   };
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        navigate({ to: "/timeline" });
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (session) {
+      navigate({ to: "/timeline" });
+    }
+  }, [session, navigate]);
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
+    <div className={styles.wrapper}>
+      <h2>Sign In</h2>
+      <form className={styles.container} onSubmit={handleLogin}>
         <input
           type="email"
           value={email}

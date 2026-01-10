@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { apiClient } from "../../../lib/api";
 import { AudioPlayer } from "../../../components/AudioPlayer";
 import audio from "../../../assets/our_song.mp3";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const Route = createFileRoute("/_authenticated/timeline/")({
   component: Timeline,
@@ -22,7 +23,7 @@ interface Metadata {
 
 function Timeline() {
   const [data, setData] = useState<Metadata[]>([]);
-
+  const { signOut } = useAuth();
   useEffect(() => {
     const fetchImages = async () => {
       const response = await apiClient("images");
@@ -32,6 +33,7 @@ function Timeline() {
   }, []);
   return (
     <>
+      <button onClick={signOut}>Logout</button>
       <AudioPlayer audioSrc={audio} />
       <div
         style={{
