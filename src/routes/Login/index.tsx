@@ -1,7 +1,7 @@
 // src/routes/login.tsx
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "../../lib/supabase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/Login/")({
   component: Login,
@@ -14,15 +14,20 @@ function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    await supabase.auth.signInWithPassword({ email, password });
+  };
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        navigate({ to: "/timeline" });
+      }
     });
 
-    if (data.session) {
-      navigate({ to: "/timeline" });
-    }
-  };
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <div>
