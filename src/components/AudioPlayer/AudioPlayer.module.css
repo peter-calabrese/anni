@@ -50,7 +50,7 @@
 }
 
 .plus {
-    position: absolute;
+    position: fixed;
     bottom: 12px;
     right: 12px;
     display: flex;

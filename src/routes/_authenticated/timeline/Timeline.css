@@ -41,9 +41,8 @@
     .timelineMessage {
         width: 100%;
     }
-}
 
-
-.container {
-    margin-bottom: 104px;
+    .container {
+        margin-bottom: 104px;
+    }
 }

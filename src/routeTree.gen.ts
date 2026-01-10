@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/Login/index'
 import { Route as AuthenticatedTimelineIndexRouteImport } from './routes/_authenticated/timeline/index'
+import { Route as AuthenticatedFileuploadIndexRouteImport } from './routes/_authenticated/fileupload/index'
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
@@ -34,15 +35,23 @@ const AuthenticatedTimelineIndexRoute =
     path: '/timeline/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedFileuploadIndexRoute =
+  AuthenticatedFileuploadIndexRouteImport.update({
+    id: '/fileupload/',
+    path: '/fileupload/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/Login': typeof LoginIndexRoute
+  '/fileupload': typeof AuthenticatedFileuploadIndexRoute
   '/timeline': typeof AuthenticatedTimelineIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/Login': typeof LoginIndexRoute
+  '/fileupload': typeof AuthenticatedFileuploadIndexRoute
   '/timeline': typeof AuthenticatedTimelineIndexRoute
 }
 export interface FileRoutesById {
@@ -50,18 +59,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/Login/': typeof LoginIndexRoute
+  '/_authenticated/fileupload/': typeof AuthenticatedFileuploadIndexRoute
   '/_authenticated/timeline/': typeof AuthenticatedTimelineIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/Login' | '/timeline'
+  fullPaths: '/' | '/Login' | '/fileupload' | '/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/Login' | '/timeline'
+  to: '/' | '/Login' | '/fileupload' | '/timeline'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/Login/'
+    | '/_authenticated/fileupload/'
     | '/_authenticated/timeline/'
   fileRoutesById: FileRoutesById
 }
@@ -101,14 +112,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTimelineIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/fileupload/': {
+      id: '/_authenticated/fileupload/'
+      path: '/fileupload'
+      fullPath: '/fileupload'
+      preLoaderRoute: typeof AuthenticatedFileuploadIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedFileuploadIndexRoute: typeof AuthenticatedFileuploadIndexRoute
   AuthenticatedTimelineIndexRoute: typeof AuthenticatedTimelineIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedFileuploadIndexRoute: AuthenticatedFileuploadIndexRoute,
   AuthenticatedTimelineIndexRoute: AuthenticatedTimelineIndexRoute,
 }
 
