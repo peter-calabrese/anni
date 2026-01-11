@@ -34,7 +34,12 @@ function Timeline() {
   }, []);
   return (
     <div className="container">
-      <button onClick={signOut}>Logout</button>
+      <button className="logout-button" style={{
+        position: "absolute",
+        top: 8,
+        right: 8,
+
+      }} onClick={signOut}>Logout</button>
       <AudioPlayer audioSrc={audio} />
       <div
         style={{

@@ -87,10 +87,9 @@ function RouteComponent() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     if (data.file == null || data.title == null || data.description == null) return
     const formData = new FormData();
-
-
     formData.append("file", data.file)
     formData.append(
       "meta",
@@ -103,10 +102,18 @@ function RouteComponent() {
     await apiClient('images', {
       method: "POST",
       body: formData
-    })
+    }).then(() => setData({
+      description: "",
+      file: null,
+      fileName: "",
+      imageDate: "",
+      title: ""
+    }))
+
+
   }
   return (
-    <form className="uploader-container" onSubmit={handleSubmit} encType="multipart/form-data">
+    <form className="uploader-container" onSubmit={handleSubmit} >
       <div
         className={`drop-zone ${isDragging ? 'dragging' : ''}`}
         onDragEnter={handleDragEnter}
