@@ -9,7 +9,6 @@ export async function apiClient(endpoint: string, options: RequestInit = {}) {
   const headers: Record<string, any> = {
     ...options.headers,
     Authorization: `Bearer ${session?.access_token}`,
-
   };
 
   return fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
