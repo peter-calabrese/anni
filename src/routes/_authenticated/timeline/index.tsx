@@ -1,6 +1,6 @@
 import "./Timeline.css";
 import TimelineCard from "../../../components/TimelineCard";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { apiClient } from "../../../lib/api";
 import { AudioPlayer } from "../../../components/AudioPlayer";

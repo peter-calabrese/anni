@@ -75,4 +75,6 @@
     border: none;
     margin: 5px 0;
     border-radius: 4px;
+    color: var(--text);
+
 }
