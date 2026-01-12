@@ -67,11 +67,14 @@ function RouteComponent() {
     const imageDate = tags['DateTimeOriginal']?.description;
     let isoStringInput = new Date().toISOString();
 
-    if (imageDate) {
-      const parts = imageDate.split(' ');
+    const parts = imageDate?.split(' ');
+
+    if (parts && parts.length > 1) {
       const datePart = parts[0].replace(/:/g, '-');
       const timePart = parts[1];
       isoStringInput = `${datePart}T${timePart}Z`;
+    } else if (parts && parts.length == 1) {
+      isoStringInput = parts[0] + 'Z'
     }
 
     let uploadFile = await prepareFile(file);
@@ -80,7 +83,7 @@ function RouteComponent() {
       {
         ...prevState,
         file: uploadFile,
-        fileName: uploadFile.name,
+        fileName: crypto.randomUUID(),
         imageDate: isoStringInput
       }
     ))
