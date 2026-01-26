@@ -4,15 +4,19 @@ import './fileupload.css'
 import { apiClient } from '../../../lib/api';
 import { heicTo } from 'heic-to';
 import ExifReader from 'exifreader';
+
 export const Route = createFileRoute('/_authenticated/fileupload/')({
   component: RouteComponent,
 })
-interface DataState {
-  title: string,
-  description: string,
-  file: File | null
+
+interface FileEntry {
+  id: string
+  file: File
   fileName: string
-  imageDate: String
+  title: string
+  description: string
+  imageDate: string
+  previewUrl: string
 }
 
 async function prepareFile(file: File): Promise<File> {
@@ -33,15 +37,9 @@ async function prepareFile(file: File): Promise<File> {
 
 function RouteComponent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [data, setData] = useState<DataState>({
-    file: null,
-    description: '',
-    title: '',
-    fileName: '',
-    imageDate: ''
-  })
+  const [files, setFiles] = useState<FileEntry[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -52,6 +50,7 @@ function RouteComponent() {
     e.preventDefault();
     setIsDragging(false)
   }
+
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   }
@@ -59,64 +58,97 @@ function RouteComponent() {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    handleFile(e.dataTransfer.files[0])
+    handleFiles(Array.from(e.dataTransfer.files));
   }
 
-  const handleFile = async (file: File) => {
-    const tags = await ExifReader.load(file);
-    const imageDate = tags['DateTimeOriginal']?.description;
-    let isoStringInput = new Date().toISOString();
+  const handleFiles = async (newFiles: File[]) => {
+    const entries: FileEntry[] = await Promise.all(
+      newFiles.map(async (file) => {
+        const tags = await ExifReader.load(file);
+        const imageDate = tags['DateTimeOriginal']?.description;
+        let isoStringInput = new Date().toISOString();
 
-    const parts = imageDate?.split(' ');
+        const parts = imageDate?.split(' ');
+        if (parts && parts.length > 1) {
+          const datePart = parts[0].replace(/:/g, '-');
+          const timePart = parts[1];
+          isoStringInput = `${datePart}T${timePart}Z`;
+        } else if (parts && parts.length == 1) {
+          isoStringInput = parts[0] + 'Z'
+        }
 
-    if (parts && parts.length > 1) {
-      const datePart = parts[0].replace(/:/g, '-');
-      const timePart = parts[1];
-      isoStringInput = `${datePart}T${timePart}Z`;
-    } else if (parts && parts.length == 1) {
-      isoStringInput = parts[0] + 'Z'
-    }
+        const uploadFile = await prepareFile(file);
+        const previewUrl = URL.createObjectURL(uploadFile);
 
-    let uploadFile = await prepareFile(file);
+        return {
+          id: crypto.randomUUID(),
+          file: uploadFile,
+          fileName: crypto.randomUUID(),
+          title: '',
+          description: '',
+          imageDate: isoStringInput,
+          previewUrl
+        };
+      })
+    );
 
-    setData(prevState => (
-      {
-        ...prevState,
-        file: uploadFile,
-        fileName: crypto.randomUUID(),
-        imageDate: isoStringInput
+    setFiles(prev => [...prev, ...entries]);
+  }
+
+  const updateFileEntry = (id: string, field: keyof FileEntry, value: string) => {
+    setFiles(prev => prev.map(entry =>
+      entry.id === id ? { ...entry, [field]: value } : entry
+    ));
+  }
+
+  const removeFile = (id: string) => {
+    setFiles(prev => {
+      const entry = prev.find(e => e.id === id);
+      if (entry) {
+        URL.revokeObjectURL(entry.previewUrl);
       }
-    ))
+      return prev.filter(e => e.id !== id);
+    });
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (data.file == null || data.title == null || data.description == null) return
-    const formData = new FormData();
-    formData.append("file", data.file)
-    formData.append(
-      "meta",
-      new Blob(
-        [JSON.stringify({ title: data.title, description: data.description, fileName: data.fileName, imageDate: data.imageDate })],
-        { type: "application/json" }
-      )
-    );
+    e.preventDefault();
+    if (files.length === 0) return;
 
-    await apiClient('images', {
-      method: "POST",
-      body: formData
-    }).then(() => setData({
-      description: "",
-      file: null,
-      fileName: "",
-      imageDate: "",
-      title: ""
-    }))
+    setIsUploading(true);
 
+    for (const entry of files) {
+      const formData = new FormData();
+      formData.append("file", entry.file);
+      formData.append(
+        "meta",
+        new Blob(
+          [JSON.stringify({
+            title: entry.title,
+            description: entry.description,
+            fileName: entry.fileName,
+            imageDate: entry.imageDate
+          })],
+          { type: "application/json" }
+        )
+      );
 
+      await apiClient('images', {
+        method: "POST",
+        body: formData
+      });
+    }
+
+    files.forEach(entry => URL.revokeObjectURL(entry.previewUrl));
+    setFiles([]);
+    setIsUploading(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
+
   return (
-    <form className="uploader-container" onSubmit={handleSubmit} >
+    <form className="uploader-container" onSubmit={handleSubmit}>
       <div
         className={`drop-zone ${isDragging ? 'dragging' : ''}`}
         onDragEnter={handleDragEnter}
@@ -129,36 +161,64 @@ function RouteComponent() {
           ref={fileInputRef}
           id="fileInput"
           type="file"
+          multiple
+          accept="image/*"
           onChange={e => {
-            const { files } = e.target
-            if (files == null) return;
-            handleFile(files[0])
+            const { files: selectedFiles } = e.target;
+            if (selectedFiles == null) return;
+            handleFiles(Array.from(selectedFiles));
           }}
           style={{ display: 'none' }}
         />
         <p>Drag and drop files here or click to browse</p>
       </div>
-      {data.file && <div className="file-list">
-        <h3>Selected Files:</h3>
-        <div className="file-item">
-          <span>{data.file.name} - {data.imageDate}</span>
-          <button onClick={() => {
-            if (!fileInputRef.current) return
-            fileInputRef.current.value = ""
-            setData(prev => ({ ...prev, file: null }))
-          }}>Remove</button>
+
+      {files.length > 0 && (
+        <div className="file-list">
+          <h3>Selected Files ({files.length}):</h3>
+          {files.map(entry => (
+            <div key={entry.id} className="file-entry">
+              <div className="file-preview">
+                <img src={entry.previewUrl} alt={entry.file.name} />
+              </div>
+              <div className="file-details">
+                <div className="file-header">
+                  <span className="original-filename">{entry.file.name}</span>
+                  <button
+                    type="button"
+                    className="remove-btn"
+                    onClick={() => removeFile(entry.id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input
+                  className="uploadInput"
+                  placeholder="File Name"
+                  value={entry.fileName}
+                  onChange={e => updateFileEntry(entry.id, 'fileName', e.target.value)}
+                />
+                <input
+                  className="uploadInput"
+                  placeholder="Title"
+                  value={entry.title}
+                  onChange={e => updateFileEntry(entry.id, 'title', e.target.value)}
+                />
+                <input
+                  className="uploadInput"
+                  placeholder="Description"
+                  value={entry.description}
+                  onChange={e => updateFileEntry(entry.id, 'description', e.target.value)}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-      }
-      <input className='uploadInput' placeholder='File Name' onChange={e => setData(prev => ({ ...prev, fileName: e.target.value }))} value={data.fileName} />
+      )}
 
-      <input className='uploadInput' placeholder='Title' onChange={e => setData(prev => ({ ...prev, title: e.target.value }))} value={data.title} />
-      <input className='uploadInput' placeholder='Description' name="description" onChange={e => setData(prev => ({ ...prev, description: e.target.value }))} value={data.description} />
-
-      <button className="upload-btn">
-        Upload Photo
+      <button className="upload-btn" disabled={files.length === 0 || isUploading}>
+        {isUploading ? 'Uploading...' : `Upload ${files.length} Photo${files.length !== 1 ? 's' : ''}`}
       </button>
     </form>
   )
-
 }

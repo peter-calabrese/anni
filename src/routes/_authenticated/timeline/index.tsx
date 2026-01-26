@@ -24,22 +24,51 @@ interface Metadata {
 function Timeline() {
   const [data, setData] = useState<Metadata[]>([]);
   const { signOut } = useAuth();
-
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchImages = async () => {
-      const response = await apiClient("images");
-      setData(await response.json());
+      setIsLoading(true);
+      try {
+        const response = await apiClient("images");
+        setData(await response.json());
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchImages();
   }, []);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!data.length)
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+        }}
+      >
+        <div> Something went wrong, try reloading the page. </div>
+        <button onClick={() => window.location.reload()}>Reload</button>
+      </div>
+    );
   return (
     <div className="container">
-      <button className="logout-button" style={{
-        position: "absolute",
-        top: 8,
-        right: 8,
-
-      }} onClick={signOut}>Logout</button>
+      <button
+        className="logout-button"
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+        }}
+        onClick={signOut}
+      >
+        Logout
+      </button>
       <AudioPlayer audioSrc={audio} />
       <div
         style={{
